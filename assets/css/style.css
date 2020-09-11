@@ -1,3 +1,18 @@
-form {
-    width:100%
+/* form {
+    display: block;
+} */
+.container {
+    max-width: none;
+    padding: 0
+}
+.row {
+    margin: 0;
+}
+.list-group {
+    width: 100%;
+    padding-top: 1rem;
+    margin-bottom: 1rem;
+}
+.list-group-item {
+    cursor: pointer;
 }

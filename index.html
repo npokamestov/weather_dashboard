@@ -13,16 +13,20 @@
         <span class="navbar-brand mb-0 h1">Weather Dashboard</span>
     </nav>
     <div class="container">
-        <div class="row mt-2" id-="main-row">
-            <div class="col" id="search-col">
+        <div class="row" id-="main-row">
+            <div class="col-sm-auto bg-light" id="search-col">
                 <div class="row" id="search-row">
-                    <h5 class="h5">Search for a City:</h5>
-                    <form>
-                        <input id="city" type="text" placeholder="Enter City Name"></input>
-                        <button id="search" type="submit" class="btn btn-primary"><span class="oi oi-magnifying-glass"></span></input>
-                    </form>
+                    <div id="form-container">
+                        <h5 class="h5">Search for a City:</h5>
+                        <form>
+                            <input id="city" type="text" placeholder="Enter City Name"></input>
+                            <button id="search" type="submit" class="btn btn-primary"><span class="oi oi-magnifying-glass"></span></input>
+                        </form>
+                    </div>
                 </div>
-                <div class="row" id="history-row"></div>
+                <div class="row" id="history-row">
+                    <ul id="history-list" class="list-group" role="tablist"></ul>
+                </div>
             </div>
             <div class="col" id="weather-col">
                 <div class="row" id="current-row"></div>
@@ -30,6 +34,7 @@
             </div>
         </div>
     </div>
-    <script src="./assets/js/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./assets/js/script.js"></script>
 </body>
 </html>
