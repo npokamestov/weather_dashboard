@@ -15,7 +15,7 @@ function renderSearchHistory(cityList) {
     };
 };
 
-var searchCityHandler = function(event) {
+function searchCityHandler(event) {
     event.preventDefault();
     if (!cityEl.value) {
         alert("You must enter a city!")
@@ -42,69 +42,119 @@ $(".list-group").on("click", ".list-group-item", function(event) {
     getFutureWeather(historySelect)
 });
 
-var getCurrentWeather = function(city) {
+function getCurrentWeather(city) {
     var apiUrlCurrent = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + apiKey + "&units=imperial";
     fetch(apiUrlCurrent)
         .then(function(response) {
             if (response.ok) {
                 response.json().then(function(data) {
-                    console.log(response)
-                    console.log(data)
+                    // console.log(response)
+                    // console.log(data)
+                    displayCurrentWeather(city, data)
+                    uvi()
                 }); 
             }
             else {
-                alert("Error " + response.statusText)
+                console.log("Error " + response.statusText)
             }
         })
         .catch(function(error) {
             alert("Unable to connect");
         });
-        
 };
 
-var getFutureWeather = function(city) {
+function displayCurrentWeather(city, data) {
+    // console.log(city)
+    // console.log(data)
+    // var cityCoord = JSON.stringify(data.coord);
+    // console.log(cityCoord)
+    var lat = JSON.stringify(data.coord.lat);
+    // console.log(lat + " lat")
+    var lon = JSON.stringify(data.coord.lon)
+    // console.log(lon + " lon")
+    var unixTime = data.dt
+    var date = new Date(unixTime*1000);
+    var formatedDate = moment(date).format("MM/DD/YYYY")
+    // console.log(date);
+    // console.log(formatedDate);
+    var temp = Math.floor(data.main.temp);
+    // console.log(temp + " degrees");
+    var humidity = data.main.humidity;
+    console.log(humidity + " humidity");
+    var windSpeed = Math.floor(data.wind.speed);
+    // console.log(windSpeed + " windspeed");
+    var iconCode = data.weather[0].icon
+    // console.log(iconCode)
+    var icon = "https://openweathermap.org/img/wn/" + iconCode + ".png"
+    // console.log(icon)
+};
+
+function uvi(lat, lon) {
+    var uvApiUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=8e10b7ae032afb26cab5474e291c55b7&lat=26.62&lon=-81.84";
+        fetch(uvApiUrl)
+            .then(function(response) {
+                if (response.ok) {
+                    response.json().then(function(data) {
+                        // console.log(response)
+                        // console.log(data)
+                        displayUV(lat, lon, data)
+                    });
+                }
+                else{
+                    console.log("Error" + response.statusText) 
+                }
+            })
+            .catch(function(error) {
+                alert("Unable to connect")
+            });
+};
+
+function displayUV(lat, lon, data) {
+    var uv = data.value
+    // console.log(uv + " UV Index")
+};
+
+function getFutureWeather(city) {
     var apiUrlFuture = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + apiKey + "&units=imperial";
     fetch(apiUrlFuture)
         .then(function(response) {
             if (response.ok) {
                 response.json().then(function(data) {
-                    console.log(response)
-                    console.log(data)
+                    // console.log(response)
+                    // console.log(data)
+                    displayFutureWeather(city, data)
                 }); 
             }
             else {
-                alert("Error " + response.statusText)
+                console.log("Error " + response.statusText)
             }
         })
         .catch(function(error) {
             alert("Unable to connect");
         });
-        
 };
 
-// var displayCurrentWeather = function (d) {
-//     var fahrenheit = Math.round(((parseFloat(d.main.temp)-273.15)*1.8)+32);
-//     document.getElementById("descirption").innerHTML = d.weather[0].description;
-//     document.getElementById("temp").innerHTML = fahrenheit + "&deg;";
-//     document.getElementById("location").innerHTML = d.name;
-// }
-
-// var displayCurrentWeather = function(data) {
-//     var conditions = data.list[0];
-//     console.log(conditions);
-//     var currentTemp = conditions.main.temp;
-//     console.log(currentTemp);
-//     var currentHumidity = conditions.main.humidity;
-//     console.log(currentHumidity);
-//     var currentWind = conditions.wind;
-//     console.log(currentWind);
-//     currentTime = conditions.city
-//     console.log(currentTime)
-
-//     var showConditions = document.createElement("div");
-//     var cityConditiions = document.querySelector("#current-row");
-//     cityConditiions.appendChild(showConditions)
-// }
+function displayFutureWeather(city, data) {
+    var futureDays = data.list;
+    // console.log(futureDays)
+    var every8th = (futureDays) => futureDays.filter((e, i) => i % 8 === 8 - 1);
+    // console.log(every8th(futureDays));
+    for (i = 0; i < every8th(futureDays).length; i++) {
+       var unixTime = every8th(futureDays)[i].dt;
+    //    console.log(unixTime);
+       var date = new Date(unixTime*1000);
+       var formatedDate = moment(date).format("MM/DD/YYYY");
+    //    console.log(formatedDate);
+       var temp = Math.floor(every8th(futureDays)[i].main.temp);
+    //    console.log(temp + " degrees");
+       var humidity = every8th(futureDays)[i].main.humidity;
+       console.log(humidity + "%");
+       var iconCode = every8th(futureDays)[i].weather[0].icon
+    //    console.log(iconCode)
+       var icon = "https://openweathermap.org/img/wn/" + iconCode + ".png"
+    //    console.log(icon)
+    }
+};
 
 searchEl.addEventListener("click", searchCityHandler)
 // historyListEl.addEventListener("click", revisitHistoryHandler)
