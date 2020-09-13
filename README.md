@@ -28,7 +28,7 @@ THEN I am again presented with current and future conditions for that city
 * JavaScript
 
 ## Website
-![Weather Dashboard](https://npokamestov.github.io/weather_dashboard)
+https://npokamestov.github.io/weather_dashboard
 
 ## Screenshot
 ![screenshot of deployed application](./assets/images/screenshot.png)
