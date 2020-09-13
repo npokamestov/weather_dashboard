@@ -4,14 +4,16 @@ var cityEl = document.querySelector("#city");
 var searchEl = document.querySelector("#search");
 var historyListEl = document.querySelector("#history-list");
 var historyListItemEl = document.querySelector(".list-group-item");
+var currentWeatherEl = document.querySelector("#current-weather");
+var futureWeatherEl = document.querySelector("#future-weather");
 
 function renderSearchHistory(cityList) {
-    $("#history-list").empty();
+    $(historyListEl).empty();
     for (var i = 0; i < cityList.length; i++) {
         var searchHistoryItem = $('<li>');
         searchHistoryItem.addClass("list-group-item list-group-item-action");
         searchHistoryItem.text(cityList[i]);
-        $("#history-list").prepend(searchHistoryItem);
+        $(historyListEl).prepend(searchHistoryItem);
     };
 };
 
@@ -33,7 +35,7 @@ function searchCityHandler(event) {
     getFutureWeather(city);
 };
 
-$(".list-group").on("click", ".list-group-item", function(event) {
+$(historyListEl).on("click", ".list-group-item", function(event) {
     var historySelect = $(this).text();
     $(this).parent().find("li").removeClass("active");
     $(this).addClass("active");
@@ -51,11 +53,10 @@ function getCurrentWeather(city) {
                     // console.log(response)
                     // console.log(data)
                     displayCurrentWeather(city, data)
-                    uvi()
                 }); 
             }
             else {
-                console.log("Error " + response.statusText)
+                alert("Error: City " + response.statusText)
             }
         })
         .catch(function(error) {
@@ -66,8 +67,6 @@ function getCurrentWeather(city) {
 function displayCurrentWeather(city, data) {
     // console.log(city)
     // console.log(data)
-    // var cityCoord = JSON.stringify(data.coord);
-    // console.log(cityCoord)
     var lat = JSON.stringify(data.coord.lat);
     // console.log(lat + " lat")
     var lon = JSON.stringify(data.coord.lon)
@@ -80,24 +79,58 @@ function displayCurrentWeather(city, data) {
     var temp = Math.floor(data.main.temp);
     // console.log(temp + " degrees");
     var humidity = data.main.humidity;
-    console.log(humidity + " humidity");
+    // console.log(humidity + " humidity");
     var windSpeed = Math.floor(data.wind.speed);
     // console.log(windSpeed + " windspeed");
     var iconCode = data.weather[0].icon
     // console.log(iconCode)
     var icon = "https://openweathermap.org/img/wn/" + iconCode + ".png"
     // console.log(icon)
+    getUVI(lat, lon, data);
+
+    $(currentWeatherEl).empty();
+
+    var displayCityItem = $("<h1>");
+        displayCityItem.addClass("h4 capitalize");
+        displayCityItem.text(city);
+        $(currentWeatherEl).append(displayCityItem);
+        // console.log(displayCityItem);
+
+    var displayDateItem = $("<h1>");
+        displayDateItem.addClass("h4")
+        displayDateItem.text(formatedDate);
+        $(currentWeatherEl).append(displayDateItem);
+
+    var displayIconItem = $("<img>");
+        displayIconItem.attr("src", icon);
+        $(currentWeatherEl).append(displayIconItem);
+        // console.log(displayIconItem);
+
+    var displayTempItem = $("<p>");
+        displayTempItem.text("Temperature: " + temp + "°F");
+        $(currentWeatherEl).append(displayTempItem);
+        // console.log(displayTempItem);
+
+    var displayHumidItem = $("<p>");
+        displayHumidItem.text("Humidity: " + humidity + "%");
+        $(currentWeatherEl).append(displayHumidItem);
+        // console.log(displayHumidItem);
+
+    var displayWindItem = $("<p>");
+        displayWindItem.text("Wind Speed: " + windSpeed + " MPH");
+        $(currentWeatherEl).append(displayWindItem);
+        // console.log(displayWindItem)
 };
 
-function uvi(lat, lon) {
-    var uvApiUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=8e10b7ae032afb26cab5474e291c55b7&lat=26.62&lon=-81.84";
+function getUVI(lat, lon, data) {
+    var uvApiUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey + "&lat=" + lat + "&lon=" + lon;
         fetch(uvApiUrl)
             .then(function(response) {
                 if (response.ok) {
                     response.json().then(function(data) {
                         // console.log(response)
                         // console.log(data)
-                        displayUV(lat, lon, data)
+                        displayUVI(lat, lon, data)
                     });
                 }
                 else{
@@ -109,9 +142,13 @@ function uvi(lat, lon) {
             });
 };
 
-function displayUV(lat, lon, data) {
+function displayUVI(lat, lon, data) {
     var uv = data.value
     // console.log(uv + " UV Index")
+    var displayUVItem = $("<p>");
+        displayUVItem.text("UV Index: " + uv)
+        $(currentWeatherEl).append(displayUVItem)
+        // console.log(displayUVItem)
 };
 
 function getFutureWeather(city) {
@@ -135,27 +172,55 @@ function getFutureWeather(city) {
 };
 
 function displayFutureWeather(city, data) {
+    var futureWeatherArr = [];
     var futureDays = data.list;
+    // console.log(futureWeatherArr)
     // console.log(futureDays)
-    var every8th = (futureDays) => futureDays.filter((e, i) => i % 8 === 8 - 1);
-    // console.log(every8th(futureDays));
-    for (i = 0; i < every8th(futureDays).length; i++) {
-       var unixTime = every8th(futureDays)[i].dt;
-    //    console.log(unixTime);
-       var date = new Date(unixTime*1000);
-       var formatedDate = moment(date).format("MM/DD/YYYY");
-    //    console.log(formatedDate);
-       var temp = Math.floor(every8th(futureDays)[i].main.temp);
-    //    console.log(temp + " degrees");
-       var humidity = every8th(futureDays)[i].main.humidity;
-       console.log(humidity + "%");
-       var iconCode = every8th(futureDays)[i].weather[0].icon
-    //    console.log(iconCode)
-       var icon = "https://openweathermap.org/img/wn/" + iconCode + ".png"
-    //    console.log(icon)
-    }
+        for (var i = 7; i < futureDays.length; i+=8) {
+            var forecast = futureDays[i]
+            var unixTime = forecast.dt;
+            // console.log(unixTime);
+            var date = new Date(unixTime*1000);
+            // console.log(date)
+            var formatedDate = moment(date).format("MM/DD/YYYY");
+            // console.log(formatedDate);
+            var temp = Math.floor(forecast.main.temp);
+            // console.log(temp + " degrees");
+            var humidity = forecast.main.humidity;
+            // console.log(humidity + "%");
+            var iconCode = forecast.weather[0].icon
+            // console.log(iconCode)
+            var icon = "https://openweathermap.org/img/wn/" + iconCode + ".png"
+            // console.log(icon)
+            futureWeatherArr.push({formatedDate,temp,humidity,icon})
+        }
+        $(futureWeatherEl).empty();
+            var forecastHeader = $("<h1>");
+                forecastHeader.addClass("h4");
+                forecastHeader.text("5-Day Forecast:");
+                $(futureWeatherEl).append(forecastHeader);
+        for (var i = 0; i < futureWeatherArr.length; i++) {
+            var futureArr = futureWeatherArr[i]
+            var displayCardEl = $("<div>");
+                displayCardEl.addClass("card text-white bg-primary p-2 display:inline-block");
+                displayCardEl.attr("style", "max-width:10rem");
+                $(futureWeatherEl).append(displayCardEl);
+            var displayDateItem = $("<h6>");
+                displayDateItem.addClass("h6")
+                displayDateItem.text(futureArr.formatedDate);
+                $(displayCardEl).append(displayDateItem);
+            var displayIconItem = $("<img>");
+                displayIconItem.attr("src", futureArr.icon);
+                $(displayCardEl).append(displayIconItem);
+            var displayTempItem = $("<p>");
+                displayTempItem.text("Temp: " + futureArr.temp + "°F");
+                $(displayCardEl).append(displayTempItem);
+            var displayHumidItem = $("<p>");
+                displayHumidItem.text("Humidity: " + futureArr.humidity + "%");
+                $(displayCardEl).append(displayHumidItem);
+        }
 };
 
-searchEl.addEventListener("click", searchCityHandler)
+searchEl.addEventListener("click", searchCityHandler);
 // historyListEl.addEventListener("click", revisitHistoryHandler)
 renderSearchHistory(cityList);
