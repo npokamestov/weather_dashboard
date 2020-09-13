@@ -1,6 +1,6 @@
-/* form {
-    display: block;
-} */
+#title {
+    font-size: 2rem;
+}
 .container {
     max-width: none;
     padding: 0;
@@ -28,4 +28,18 @@ h1 {
 }
 p {
     padding-left: 5px;
+}
+#current-weather {
+    border: 0.5px solid rgba(0,0,0,0.15);
+    border-radius: 5px;
+}
+#future-header {
+    width: 100%;
+}
+#future-weather {
+    display: flex;
+    flex-wrap: wrap;
+}
+#future-weather img {
+    width: 30%;
 }

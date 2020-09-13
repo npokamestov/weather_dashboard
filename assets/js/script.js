@@ -5,6 +5,7 @@ var searchEl = document.querySelector("#search");
 var historyListEl = document.querySelector("#history-list");
 var historyListItemEl = document.querySelector(".list-group-item");
 var currentWeatherEl = document.querySelector("#current-weather");
+var futureWeatherHeaderEl = document.querySelector("#future-header")
 var futureWeatherEl = document.querySelector("#future-weather");
 
 function renderSearchHistory(cityList) {
@@ -146,8 +147,21 @@ function displayUVI(lat, lon, data) {
     var uv = data.value
     // console.log(uv + " UV Index")
     var displayUVItem = $("<p>");
-        displayUVItem.text("UV Index: " + uv)
-        $(currentWeatherEl).append(displayUVItem)
+        // displayUVItem.addClass("badge badge-success");
+        displayUVItem.text("UV Index: ");
+        $(currentWeatherEl).append(displayUVItem);
+    var displayUVNum = $("<span>");
+        if (uv <= 4) {
+        displayUVNum.addClass("badge badge-success")
+        }
+        else if (4 < uv && uv <= 8) {
+        displayUVNum.addClass("badge badge-warning")
+        }
+        else if (8 < uv && uv <=12) {
+        displayUVNum.addClass("badge badge-danger")
+        }
+        displayUVNum.text(uv)
+        $(displayUVItem).append(displayUVNum)
         // console.log(displayUVItem)
 };
 
@@ -194,15 +208,16 @@ function displayFutureWeather(city, data) {
             // console.log(icon)
             futureWeatherArr.push({formatedDate,temp,humidity,icon})
         }
+        $(futureWeatherHeaderEl).empty();
         $(futureWeatherEl).empty();
             var forecastHeader = $("<h1>");
                 forecastHeader.addClass("h4");
                 forecastHeader.text("5-Day Forecast:");
-                $(futureWeatherEl).append(forecastHeader);
+                $(futureWeatherHeaderEl).append(forecastHeader);
         for (var i = 0; i < futureWeatherArr.length; i++) {
             var futureArr = futureWeatherArr[i]
             var displayCardEl = $("<div>");
-                displayCardEl.addClass("card text-white bg-primary p-2 display:inline-block");
+                displayCardEl.addClass("card text-white bg-primary p-2 display:inline-block m-1");
                 displayCardEl.attr("style", "max-width:10rem");
                 $(futureWeatherEl).append(displayCardEl);
             var displayDateItem = $("<h6>");
