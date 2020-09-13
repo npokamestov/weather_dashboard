@@ -16,12 +16,25 @@ function renderSearchHistory(cityList) {
         searchHistoryItem.text(cityList[i]);
         $(historyListEl).prepend(searchHistoryItem);
     };
+    var clearBtn = $("<button>");
+        clearBtn.addClass("btn btn-secondary")
+        clearBtn.attr("id", "clearHistory")
+        clearBtn.attr("type", "submit")
+        clearBtn.text("Clear History")
+        $(historyListEl).append(clearBtn)
+        $("#clearHistory").on("click", clearSearchHistoryHandler);
 };
+
+function clearSearchHistoryHandler(cityList) {
+    localStorage.removeItem("searchHistoryList");
+    renderSearchHistory(cityList);
+}
 
 function searchCityHandler(event) {
     event.preventDefault();
     if (!cityEl.value) {
         alert("You must enter a city!")
+        return;
     }
     else {
     var city = $("#city")
@@ -157,7 +170,7 @@ function displayUVI(lat, lon, data) {
         else if (4 < uv && uv <= 8) {
         displayUVNum.addClass("badge badge-warning")
         }
-        else if (8 < uv && uv <=12) {
+        else if (8 < uv && uv <=20) {
         displayUVNum.addClass("badge badge-danger")
         }
         displayUVNum.text(uv)
@@ -237,5 +250,4 @@ function displayFutureWeather(city, data) {
 };
 
 searchEl.addEventListener("click", searchCityHandler);
-// historyListEl.addEventListener("click", revisitHistoryHandler)
 renderSearchHistory(cityList);
