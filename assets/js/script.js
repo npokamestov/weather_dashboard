@@ -8,8 +8,10 @@ var currentWeatherEl = document.querySelector("#current-weather");
 var futureWeatherHeaderEl = document.querySelector("#future-header")
 var futureWeatherEl = document.querySelector("#future-weather");
 
+// creates list showing history of searched cities
 function renderSearchHistory(cityList) {
     $(historyListEl).empty();
+    // checks for objects in array and then adds to list
     for (var i = 0; i < cityList.length; i++) {
         var searchHistoryItem = $('<li>');
         searchHistoryItem.addClass("list-group-item list-group-item-action");
@@ -24,12 +26,12 @@ function renderSearchHistory(cityList) {
         $(historyListEl).append(clearBtn)
         $("#clearHistory").on("click", clearSearchHistoryHandler);
 };
-
+// clear search history list
 function clearSearchHistoryHandler(cityList) {
     localStorage.removeItem("searchHistoryList");
     renderSearchHistory(cityList);
 }
-
+// used to handle input into search field
 function searchCityHandler(event) {
     event.preventDefault();
     if (!cityEl.value) {
@@ -45,10 +47,11 @@ function searchCityHandler(event) {
     localStorage.setItem("searchHistoryList", JSON.stringify(cityList));
     $("#city").val("");
     };
+    // uses input to get both current and future weather
     getCurrentWeather(city);
     getFutureWeather(city);
 };
-
+// shows weather when clicking on history item rather than using input field
 $(historyListEl).on("click", ".list-group-item", function(event) {
     var historySelect = $(this).text();
     $(this).parent().find("li").removeClass("active");
@@ -57,7 +60,7 @@ $(historyListEl).on("click", ".list-group-item", function(event) {
     getCurrentWeather(historySelect)
     getFutureWeather(historySelect)
 });
-
+// uses api to find current weather for selected city
 function getCurrentWeather(city) {
     var apiUrlCurrent = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + apiKey + "&units=imperial";
     fetch(apiUrlCurrent)
@@ -77,7 +80,7 @@ function getCurrentWeather(city) {
             alert("Unable to connect");
         });
 };
-
+// pick out data received from api and then write to page
 function displayCurrentWeather(city, data) {
     // console.log(city)
     // console.log(data)
@@ -135,7 +138,7 @@ function displayCurrentWeather(city, data) {
         $(currentWeatherEl).append(displayWindItem);
         // console.log(displayWindItem)
 };
-
+// uses api to find UV index for selected city
 function getUVI(lat, lon, data) {
     var uvApiUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey + "&lat=" + lat + "&lon=" + lon;
         fetch(uvApiUrl)
@@ -155,7 +158,7 @@ function getUVI(lat, lon, data) {
                 alert("Unable to connect")
             });
 };
-
+// uses uv data to display to page
 function displayUVI(lat, lon, data) {
     var uv = data.value
     // console.log(uv + " UV Index")
@@ -177,7 +180,7 @@ function displayUVI(lat, lon, data) {
         $(displayUVItem).append(displayUVNum)
         // console.log(displayUVItem)
 };
-
+// uses api to get 5 day weather forcast data
 function getFutureWeather(city) {
     var apiUrlFuture = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + apiKey + "&units=imperial";
     fetch(apiUrlFuture)
@@ -197,7 +200,7 @@ function getFutureWeather(city) {
             alert("Unable to connect");
         });
 };
-
+// picks out data from api and then displays on page
 function displayFutureWeather(city, data) {
     var futureWeatherArr = [];
     var futureDays = data.list;
