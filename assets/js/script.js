@@ -2,6 +2,7 @@ var apiKey = "8e10b7ae032afb26cab5474e291c55b7";
 var cityList = JSON.parse(localStorage.getItem("searchHistoryList")) || [];
 var cityEl = document.querySelector("#city");
 var searchEl = document.querySelector("#search");
+var historyRowEl = document.querySelector("#history-row")
 var historyListEl = document.querySelector("#history-list");
 var historyListItemEl = document.querySelector(".list-group-item");
 var currentWeatherEl = document.querySelector("#current-weather");
@@ -12,25 +13,31 @@ var futureWeatherEl = document.querySelector("#future-weather");
 function renderSearchHistory(cityList) {
     $(historyListEl).empty();
     // checks for objects in array and then adds to list
-    for (var i = 0; i < cityList.length; i++) {
-        var searchHistoryItem = $('<li>');
-        searchHistoryItem.addClass("list-group-item list-group-item-action");
-        searchHistoryItem.text(cityList[i]);
-        $(historyListEl).prepend(searchHistoryItem);
+            for (var i = 0; i < cityList.length; i++) {
+                var searchHistoryItem = $('<li>');
+                    searchHistoryItem.addClass("list-group-item list-group-item-action");
+                    searchHistoryItem.text(cityList[i]);
+                    $(historyListEl).prepend(searchHistoryItem);
+            };
+            renderClearBtn(cityList)
+};
+// function to show clear history button to easily clear search history
+function renderClearBtn(cityList) {
+    if (cityList.length >= 1) {
+        var clearBtn = $("<button>");
+            clearBtn.addClass("btn btn-secondary");
+            clearBtn.attr("id", "clearHistory");
+            clearBtn.attr("type", "submit");
+            clearBtn.text("Clear History");
+            $(historyListEl).append(clearBtn);
+            $("#clearHistory").on("click", clearSearchHistoryHandler);
     };
-    var clearBtn = $("<button>");
-        clearBtn.addClass("btn btn-secondary")
-        clearBtn.attr("id", "clearHistory")
-        clearBtn.attr("type", "submit")
-        clearBtn.text("Clear History")
-        $(historyListEl).append(clearBtn)
-        $("#clearHistory").on("click", clearSearchHistoryHandler);
 };
 // clear search history list
 function clearSearchHistoryHandler(cityList) {
     localStorage.removeItem("searchHistoryList");
     renderSearchHistory(cityList);
-}
+};
 // used to handle input into search field
 function searchCityHandler(event) {
     event.preventDefault();
