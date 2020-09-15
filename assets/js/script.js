@@ -80,6 +80,10 @@ function getCurrentWeather(city) {
                 }); 
             }
             else {
+                // notifies and removes invalid city name
+                cityList.pop(city);
+                localStorage.setItem("searchHistoryList", JSON.stringify(cityList));
+                renderSearchHistory(cityList)
                 alert("Error: City " + response.statusText)
             }
         })
